@@ -1,0 +1,2 @@
+/home/moses/myandroid/hardware/imx/wlan/atheros/compat-wireless/drivers/net/wireless/ath/ath.ko
+/home/moses/myandroid/hardware/imx/wlan/atheros/compat-wireless/drivers/net/wireless/ath/main.o /home/moses/myandroid/hardware/imx/wlan/atheros/compat-wireless/drivers/net/wireless/ath/regd.o /home/moses/myandroid/hardware/imx/wlan/atheros/compat-wireless/drivers/net/wireless/ath/hw.o /home/moses/myandroid/hardware/imx/wlan/atheros/compat-wireless/drivers/net/wireless/ath/key.o
