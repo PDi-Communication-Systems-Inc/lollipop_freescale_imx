@@ -21,18 +21,18 @@
 
 
 #define MIXER_WM8960_SPEAKER_VOLUME                 "Speaker Playback Volume"
-#define MIXER_WM8960_HP_VOLUME                 	    "Headphone Playback Volume"
+#define MIXER_WM8960_HP_VOLUME                 		"Headphone Playback Volume"
 #define MIXER_WM8960_SPEAKER_AC                     "Speaker AC Volume"
 #define MIXER_WM8960_SPEAKER_DC                     "Speaker DC Volume"
 #define MIXER_WM8960_SPEAKER_SWITCH                 "Right Output Mixer PCM Playback Switch"
 #define MIXER_WM8960_HP_SWITCH                 	    "Left Output Mixer PCM Playback Switch"
 #define MIXER_WM8960_DIGITAL_PLAYBACK_VOLUME        "Playback Volume"
-#define MIXER_WM8960_6DB_SWITCH			    "PCM Playback -6dB Switch"
+#define MIXER_WM8960_6DB_SWITCH						"PCM Playback -6dB Switch"
 #define MIXER_WM8960_CAPTURE_SWITCH                 "Capture Switch"
 #define MIXER_WM8960_CAPTURE_VOLUME                 "Capture Volume"
 #define MIXER_WM8960_DIGITAL_CAPTURE_VOLUME         "ADC PCM Capture Volume"
-#define MIXER_WM8960_ADC_PATH			    "ADC Path"
-#define MIXER_WM8960_BOOST_MIXER_SWITCH		    "Boost Mixer Enable Switch"
+#define MIXER_WM8960_ADC_PATH                       "ADC Path"
+#define MIXER_WM8960_BOOST_MIXER_SWITCH             "Boost Mixer Enable Switch"
 
 /* These are values that never change */
 static struct route_setting defaults_wm8960[] = {
@@ -85,7 +85,7 @@ static struct route_setting speaker_output_wm8960[] = {
     },
     {
         .ctl_name = MIXER_WM8960_HP_VOLUME,
-        .intval = 120, 	/* 120 = -1dB output gain (LOUT1VOL and ROUT1VOL) - JTS */
+        .intval = 120,  /* 120 = -1dB output gain (LOUT1VOL and ROUT1VOL) - JTS */
     },
     {
         .ctl_name = MIXER_WM8960_SPEAKER_AC,
@@ -97,7 +97,7 @@ static struct route_setting speaker_output_wm8960[] = {
     },
     {
         .ctl_name = MIXER_WM8960_DIGITAL_PLAYBACK_VOLUME,
-        .intval = 255,
+        .intval = 255,  /* 255 = default 0dB DAC volume control (LDACVOL and RDACVOL) - JTS */
     },
     {
         .ctl_name = NULL,
@@ -107,11 +107,11 @@ static struct route_setting speaker_output_wm8960[] = {
 static struct route_setting mm_main_mic_input_wm8960[] = {
     {
         .ctl_name = MIXER_WM8960_CAPTURE_SWITCH,
-        .intval = 0,	/* 0 = disable MUTE (LINMUTE and RINMUTE) - JTS */
+        .intval = 0,    /* 0 = disable MUTE (LINMUTE and RINMUTE) - JTS */
     },
     {
         .ctl_name = MIXER_WM8960_CAPTURE_VOLUME,
-        .intval = 55,	/* 55 = gain +24dB (LINVOL and RINVOL) - JTS*/ 
+        .intval = 55,   /* 55 = gain +24dB (LINVOL and RINVOL) - JTS */
     },
     {
         .ctl_name = MIXER_WM8960_DIGITAL_CAPTURE_VOLUME,
@@ -119,12 +119,12 @@ static struct route_setting mm_main_mic_input_wm8960[] = {
     },
     {
         .ctl_name = MIXER_WM8960_ADC_PATH,
-        .intval = 13, /* connect input 2 to PGA, mic boost = +20 dB, connect PGA to boost mixer 
-                         (LMP2, LMICBOOST, LMIC2B, RMP2, RMICBOOST, RMIC2B) - JTS */
+        .intval = 13,   /* connect input 2 to PGA, mic boost = +20dB, connect PGA to boost mixer 
+                           (LMP2, LMICBOOST, LMIC2B, RMP2, RMICBOOST, RMIC2B)- JTS */
     },
     {
-	.ctl_name = MIXER_WM8960_BOOST_MIXER_SWITCH,
-	.intval = 1, /* turn on PGA and Boost Mixer (AINL/AINR) - JTS */
+        .ctl_name = MIXER_WM8960_BOOST_MIXER_SWITCH,
+        .intval = 1,   /* turn on PGA and Boost Mixer (AINL and AINR) - JTS */
     },
     {
         .ctl_name = NULL,
@@ -134,11 +134,11 @@ static struct route_setting mm_main_mic_input_wm8960[] = {
 static struct route_setting mm_hs_mic_input_wm8960[] = {
     {
         .ctl_name = MIXER_WM8960_CAPTURE_SWITCH,
-        .intval = 0, /* 0 = disable MUTE  (LINMUTE and RINMUTE) - JTS */
+        .intval = 0,    /* 0 = disable MUTE (LINMUTE and RINMUTE) - JTS */
     },
     {
         .ctl_name = MIXER_WM8960_CAPTURE_VOLUME,
-        .intval = 55, /* 55 = gain +24dB (LINVOL and RINVOL) - JTS */
+        .intval = 55,   /* 55 = gain +24dB (LINVOL and RINVOL) - JTS */
     },
     {
         .ctl_name = MIXER_WM8960_DIGITAL_CAPTURE_VOLUME,
@@ -146,13 +146,13 @@ static struct route_setting mm_hs_mic_input_wm8960[] = {
     },
     {
         .ctl_name = MIXER_WM8960_ADC_PATH,
-        .intval = 13, /* connect input 2 to PGA, mic boost = +20 dB, connect PGA to boost mixer
- 			 (LMP2, LMICBOOST, LMIC2B, RMP2, RMICBOOST, RMIC2B) - JTS */ 
+        .intval = 13,   /* connect input 2 to PGA, mic boost = +20dB, connect PGA to boost mixer 
+                           (LMP2, LMICBOOST, LMIC2B, RMP2, RMICBOOST, RMIC2B)- JTS */
     },
-    {   
+    {
         .ctl_name = MIXER_WM8960_BOOST_MIXER_SWITCH,
-        .intval = 1, /* turn on PGA and Boost Mixer (AINL/AINR) - JTS */
-    },  
+        .intval = 1,   /* turn on PGA and Boost Mixer (AINL and AINR) - JTS */
+    },
     {
         .ctl_name = NULL,
     },
