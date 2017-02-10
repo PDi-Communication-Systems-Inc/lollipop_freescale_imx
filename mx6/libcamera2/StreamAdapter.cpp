@@ -19,7 +19,7 @@
 
 static void convertUV(unsigned char *pbySrcColor, unsigned char *pbyDstColor, unsigned int width, unsigned int height) //StreamBuffer *dst, StreamBuffer *src)
 {
- //   FLOGI("convertUV\n");
+    FLOGI(">>>> convertUV\n");                                 //JAD
 
     unsigned int bufWidth = width;
     unsigned int bufHeight = height;
@@ -80,6 +80,7 @@ static void YUV422ToYUV420Interleave(unsigned char* pbySrcY, unsigned char* pbyS
             unsigned int dwSrcYStide, unsigned int /*dwSrcCStride*/, unsigned int dwSrcHeight,
             unsigned char *pbyDstY, unsigned char *pbyDstC,
             unsigned int dwDstYStide, unsigned int /*dwDstCStide*/, unsigned int dwDstHeight) {
+    FLOGI(">>>> YUV422ToYUV420Interleave\n");                                 //JAD
     //convert Y
     unsigned char *pInY = pbySrcY;
     unsigned char *pOutY = pbyDstY;
@@ -110,6 +111,7 @@ StreamAdapter::~StreamAdapter()
 
 int StreamAdapter::initialize(int width, int height, int format, int usage, int bufferNum)
 {
+    FLOGI("RequestManager::%s %d %d %d %d ", __FUNCTION__,width,height,format,usage);          //JAD
     mWidth = width;
     mHeight = height;
     mFormat = format;
@@ -337,13 +339,13 @@ void StreamAdapter::convertNV12toYV12(StreamBuffer* dst, StreamBuffer* src)
     int dstYStride = 0, dstUVStride = 0;
     int dstYSize = 0, dstUVSize = 0;
 
-    srcYSize = src->mWidth * src->mHeight;
+    srcYSize = src->mWidth * src->mHeight;          //JAD was
     srcUVSize = src->mWidth * src->mHeight >> 2;
     Yin = (uint8_t *)src->mVirtAddr;
     UVin = Yin + src->mWidth * src->mHeight;
 
-    dstYStride = (dst->mWidth+15)/16*16;
-    dstUVStride = (dst->mWidth/2+15)/16*16;
+    dstYStride = (dst->mWidth+15)/16*16;             //JAD was
+    dstUVStride = (dst->mWidth/2+15)/16*16;          //JAD was
     dstYSize = dstYStride * dst->mHeight;
     dstUVSize = dstUVStride * dst->mHeight / 2;
     Yout = (uint8_t *)dst->mVirtAddr;
@@ -407,7 +409,7 @@ int StreamAdapter::processFrame(CameraFrame *frame)
 {
     status_t ret = NO_ERROR;
     int size;
-
+	FLOGI("StreamAdapter::%s Line: %i", __FUNCTION__, __LINE__);                   //JAD
     if (mShowFps) {
         showFps();
     }
@@ -415,20 +417,23 @@ int StreamAdapter::processFrame(CameraFrame *frame)
     StreamBuffer buffer;
     ret = requestBuffer(&buffer);
     if (ret != NO_ERROR) {
-        FLOGE("%s requestBuffer failed", __FUNCTION__);
+	FLOGI("StreamAdapter::%s Line: %i", __FUNCTION__, __LINE__);                   //JAD
         goto err_ext;
     }
 
     size = (frame->mSize > buffer.mSize) ? buffer.mSize : frame->mSize;
     if (mStreamId == STREAM_ID_PRVCB &&
             buffer.mFormat == HAL_PIXEL_FORMAT_YCbCr_420_P) {
+	    FLOGI("StreamAdapter::%s Line: %i", __FUNCTION__, __LINE__);               //JAD
         convertNV12toYV12(&buffer, frame);
     }
     else if (mStreamId == STREAM_ID_PRVCB && buffer.mWidth <= 1280 &&
             buffer.mFormat == HAL_PIXEL_FORMAT_YCbCr_420_SP) {
+			FLOGI("StreamAdapter::%s Line: %i", __FUNCTION__, __LINE__);           //JAD
         convertNV12toNV21(&buffer, frame);
     }
     else if (g2dHandle != NULL) {
+	    FLOGI("StreamAdapter::%s Line: %i", __FUNCTION__, __LINE__);               //JAD
         struct g2d_buf s_buf, d_buf;
         s_buf.buf_paddr = frame->mPhyAddr;
         s_buf.buf_vaddr = frame->mVirtAddr;
@@ -440,6 +445,7 @@ int StreamAdapter::processFrame(CameraFrame *frame)
         //when 1080p recording, although g2d_copy is fast, but vpu encode is slower,
         //so slow down g2d_copy to free bus, then vpu encode run faster,
         //It's a balance.
+		FLOGI(">>>> Line 448 - StreamAdapter::processFrame(CameraFrame *frame)");   //JAD
         if( (mDeviceAdapter.get() != NULL) && (mDeviceAdapter->mCpuNum == 2) &&
             (mWidth == 1920) && (mHeight == 1080) ) {
             usleep(33000);
@@ -450,9 +456,11 @@ int StreamAdapter::processFrame(CameraFrame *frame)
             frame->mWidth, frame->mWidth/2, frame->mHeight,
             (unsigned char *)buffer.mVirtAddr, (unsigned char *)buffer.mVirtAddr + buffer.mWidth * buffer.mHeight, buffer.mWidth, buffer.mWidth/4, buffer.mHeight);
 	} else {
-        memcpy(buffer.mVirtAddr, (void *)frame->mVirtAddr, size);
+        FLOGI(">>>> Line 461 - StreamAdapter::processFrame(CameraFrame *frame)");   //JAD
+		memcpy(buffer.mVirtAddr, (void *)frame->mVirtAddr, size);
     }
 
+	FLOGI(">>>> Line 465 - StreamAdapter::processFrame(CameraFrame *frame)");       //JAD
     buffer.mTimeStamp = frame->mTimeStamp;
     ret = renderBuffer(&buffer);
     if (ret != NO_ERROR) {

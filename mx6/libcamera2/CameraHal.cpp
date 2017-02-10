@@ -79,7 +79,7 @@ int CameraHal::construct_default_request(
 }
 
 int CameraHal::allocate_stream(uint32_t width,
-        uint32_t height, int format,
+        uint32_t height, int format,                
         const camera2_stream_ops_t *stream_ops,
         uint32_t *stream_id,
         uint32_t *format_actual,
@@ -87,7 +87,7 @@ int CameraHal::allocate_stream(uint32_t width,
         uint32_t *max_buffers)
 {
     return mRequestManager->allocateStream(width, height, format,
-                stream_ops, stream_id, format_actual, usage, max_buffers);
+                stream_ops, stream_id, format_actual, usage, max_buffers);   
 }
 
 int CameraHal::register_stream_buffers(

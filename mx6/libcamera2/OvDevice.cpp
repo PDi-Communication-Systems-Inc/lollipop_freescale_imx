@@ -204,7 +204,10 @@ int OvDevice::getCaptureMode(int width, int height)
     }
     else if ((width == 1024) && (height == 768)) {
         capturemode = 8;
-    }
+	}
+    else if ((width == 1368) && (height == 768)) {   //JAD added
+        capturemode = 9;                             //JAD added
+	}
     else {
         FLOGE("width:%d height:%d is not supported.", width, height);
     }

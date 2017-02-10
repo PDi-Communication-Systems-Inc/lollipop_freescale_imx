@@ -371,18 +371,24 @@ int RequestManager::allocateStream(uint32_t width,
 {
     int sid = -1;
     sp<StreamAdapter> cameraStream;
+    FLOG_TRACE("RequestManager::%s... HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED = %d", __FUNCTION__, HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED);    //JAD format 34?
+	FLOG_TRACE("RequestManager::%s... HAL_PIXEL_FORMAT_BLOB = %d", __FUNCTION__, HAL_PIXEL_FORMAT_BLOB);                  //JAD format 33?
+	FLOG_TRACE("RequestManager::%s... HAL_PIXEL_FORMAT_YCbCr_420_SP = %d", __FUNCTION__, HAL_PIXEL_FORMAT_YCbCr_420_SP);  //JAD format 259?
+	FLOG_TRACE("RequestManager::%s... CAMERA2_HAL_PIXEL_FORMAT_ZSL = %d", __FUNCTION__, CAMERA2_HAL_PIXEL_FORMAT_ZSL);    //JAD format -1?
+	FLOG_TRACE("RequestManager::%s... HAL_PIXEL_FORMAT_YCbCr_420_P = %d/n", __FUNCTION__, HAL_PIXEL_FORMAT_YCbCr_420_P);    //JAD format257?
+	
+    FLOG_TRACE("RequestManager::%s...", __FUNCTION__);
 
-    FLOG_TRACE("RequestManager %s...", __FUNCTION__);
     if (format == HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED) {
         if(mStreamAdapter[STREAM_ID_PREVIEW].get() != NULL) {
-            FLOGI("%s record stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
+            FLOGI("+++ 1RequestManager::%s record stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
                           width, height, format);
             sid = STREAM_ID_RECORD;
             cameraStream = new StreamAdapter(sid);
             *max_buffers = NUM_RECORD_BUFFER;
         }
         else {
-            FLOGI("%s preview stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
+            FLOGI("+++ 2RequestManager::%s preview stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
                           width, height, format);
             sid = STREAM_ID_PREVIEW;
             cameraStream = new PreviewStream(sid);
@@ -392,7 +398,7 @@ int RequestManager::allocateStream(uint32_t width,
                //2 buffers is reserved in server side, can't register to VPU.
                //So add extra 2 to make the buffers same as nv12 case.
               *max_buffers = NUM_PREVIEW_BUFFER + 2;
-              FLOGI("RequestManager::allocateStream, need %d buffers for preview stream", *max_buffers);
+              FLOGI("+++ 3RequestManager::%s..., need %d buffers for preview stream", __FUNCTION__, *max_buffers);
             }
         }
 
@@ -406,15 +412,15 @@ int RequestManager::allocateStream(uint32_t width,
 			    *format_actual = HAL_PIXEL_FORMAT_YCbCr_420_SP;
 		}
 
-        FLOGI("actual format 0x%x", *format_actual);
+        FLOGI("+++ 4RequestManager::%s actual format 0x%x", __FUNCTION__, *format_actual);
     }
     else if (format == HAL_PIXEL_FORMAT_BLOB) {
-        FLOGI("%s jpeg stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
+        FLOGI("+++ 5RequestManager::%s jpeg stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
                       width, height, format);
         //*format_actual = HAL_PIXEL_FORMAT_BLOB;
         *usage = CAMERA_GRALLOC_USAGE_JPEG;
         *format_actual = mDeviceAdapter->getPicturePixelFormat();
-        FLOGI("actual format 0x%x", *format_actual);
+		FLOGI("+++ 6RequestManager::%s Line: %i, actual format 0x%x", __FUNCTION__, __LINE__, *format_actual);      //JAD
         sid = STREAM_ID_JPEG;
         *max_buffers = NUM_CAPTURE_BUFFER;
 
@@ -422,7 +428,7 @@ int RequestManager::allocateStream(uint32_t width,
     }
     else if (format == HAL_PIXEL_FORMAT_YCbCr_420_SP ||
                          format == HAL_PIXEL_FORMAT_YCbCr_420_P) {
-        FLOGI("%s callback stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
+        FLOGI("+++ 7RequestManager::%s callback stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
                       width, height, format);
         *usage = CAMERA_GRALLOC_USAGE;
         *format_actual = format;
@@ -432,7 +438,7 @@ int RequestManager::allocateStream(uint32_t width,
         cameraStream = new StreamAdapter(sid);
     }
     else if (format == CAMERA2_HAL_PIXEL_FORMAT_ZSL) {
-        FLOGI("%s callback stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
+        FLOGI("+++ 8RequestManager::%s callback stream, w:%d, h:%d, fmt:0x%x", __FUNCTION__,
                       width, height, format);
         *usage = CAMERA_GRALLOC_USAGE_JPEG;
         *format_actual = HAL_PIXEL_FORMAT_YCbCr_420_SP;
@@ -442,11 +448,19 @@ int RequestManager::allocateStream(uint32_t width,
         cameraStream = new StreamAdapter(sid);
     }
     else {
-        FLOGE("format %d does not support now.", format);
+        FLOGE(">>>> format %d does not support now.", format);
         return BAD_VALUE;
     }
+ 
+    FLOG_TRACE("+++ 9 sid:%d, usage:%d, fmt:%d", sid, usage, format);    //JAD format 34?
 
-    *stream_id = sid;
+//    sid = STREAM_ID_PRVCB;                              //JAD Forced STREAM_ID_PREVIEW-STREAM_ID_JPEG-STREAM_ID_RECORD-STREAM_ID_PRVCB
+//  *max_buffers = NUM_CAPTURE_BUFFER;                    //JAD Forced
+//  cameraStream = new CaptureStream(sid);                //JAD Forced
+//	*usage = CAMERA_GRALLOC_USAGE;                        //JAD Forced CAMERA_GRALLOC_USAGE or CAMERA_GRALLOC_USAGE_JPEG
+//	*format_actual = HAL_PIXEL_FORMAT_YCbCr_420_SP;       //JAD Forced
+	
+    *stream_id = sid;               
     cameraStream->initialize(width, height, *format_actual, *usage, *max_buffers);
     cameraStream->setPreviewWindow(stream_ops);
     cameraStream->setDeviceAdapter(mDeviceAdapter);
@@ -454,7 +468,7 @@ int RequestManager::allocateStream(uint32_t width,
     cameraStream->setErrorListener(this);
 
     mStreamAdapter[sid] = cameraStream;
-    FLOG_TRACE("RequestManager %s end...", __FUNCTION__);
+    FLOG_TRACE("RequestManager::%s end...", __FUNCTION__);
 
     return 0;
 }
@@ -462,17 +476,17 @@ int RequestManager::allocateStream(uint32_t width,
 int RequestManager::registerStreamBuffers(uint32_t stream_id, int num_buffers,
         buffer_handle_t *buffers)
 {
-    FLOG_TRACE("RequestManager %s stream id:%d", __FUNCTION__, stream_id);
+    FLOG_TRACE("RequestManager::%s stream id:%d", __FUNCTION__, stream_id);                  //JAD
     fAssert(mStreamAdapter[stream_id].get() != NULL);
     mStreamAdapter[stream_id]->registerBuffers(num_buffers, buffers);
-    FLOG_TRACE("RequestManager %s end...", __FUNCTION__);
+    FLOG_TRACE("RequestManager::%s end...", __FUNCTION__);
 
     return 0;
 }
 
 int RequestManager::releaseStream(uint32_t stream_id)
 {
-    FLOG_TRACE("RequestManager %s stream id:%d", __FUNCTION__, stream_id);
+    FLOG_TRACE("RequestManager::%s stream id:%d", __FUNCTION__, stream_id);
     sp<StreamAdapter> cameraStream = mStreamAdapter[stream_id];
     if (cameraStream.get() == NULL) {
         FLOGI("%s release invalid stream %d", __FUNCTION__, stream_id);
@@ -486,18 +500,18 @@ int RequestManager::releaseStream(uint32_t stream_id)
         cameraStream->release();
     }
     mStreamAdapter[stream_id].clear();
-    FLOG_TRACE("RequestManager %s end...", __FUNCTION__);
+    FLOG_TRACE("RequestManager::%s end...", __FUNCTION__);
 
     return 0;
 }
 
 void RequestManager::release()
 {
-    FLOG_TRACE("RequestManager %s...", __FUNCTION__);
+    FLOG_TRACE("RequestManager::%s...", __FUNCTION__);
     for (int id = 0; id < MAX_STREAM_NUM; id++) {
         if (mStreamAdapter[id].get() != NULL) {
             releaseStream(id);
         }
     }
-    FLOG_TRACE("RequestManager %s end...", __FUNCTION__);
+    FLOG_TRACE("RequestManager::%s end...", __FUNCTION__);
 }
