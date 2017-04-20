@@ -403,10 +403,10 @@ status_t MetadaManager::getFrameRate(int *value)
     }
 
     if (v[0] > 15 && v[1] > 15) {
-        *value =30;                                       //JAD was 30
+        *value = 30;
     }
     else {
-        *value = 15;                                       //JAD was 15
+        *value = 15;
     }
     return NO_ERROR;
 }

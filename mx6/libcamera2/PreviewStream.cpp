@@ -19,7 +19,7 @@
 
 int PreviewStream::configure(int fps, bool /*videoSnapshot*/)
 {
-    FLOG_TRACE("PreviewStream::%s running", __FUNCTION__);
+    FLOG_TRACE("PreviewStream %s running", __FUNCTION__);
     int ret = NO_ERROR;
     int errCode = 0;
 
